@@ -1,0 +1,5 @@
+.git
+.assetsignore
+wrangler.jsonc
+supabase
+README.md

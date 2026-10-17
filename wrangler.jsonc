@@ -1,0 +1,8 @@
+{
+  // Cloudflare settings: serves this folder as a static site.
+  "name": "yellowchecklist",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./"
+  }
+}
