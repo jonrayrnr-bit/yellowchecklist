@@ -337,24 +337,56 @@ async function viewSearch() {
 
 async function viewSignIn() {
   if (await db.myProfile()) { go('#/'); return; }
+  if (await db.currentUser()) { go('#/welcome'); return; }
   main.innerHTML = `
     <form id="signin" class="sheet paper stack narrow">
       <h1 class="sheet-title">Sign in</h1>
-      <p>We'll email you a sign-in link. No password needed.</p>
+      <p>No password needed. We'll email you a sign-in code.</p>
       <label for="f-email">Email</label>
       <input id="f-email" type="email" required autocomplete="email">
-      <button class="btn" type="submit">Email me a link</button>
+      <button class="btn" type="submit">Email me a code</button>
       <div id="form-msg"></div>
     </form>`;
   const f = document.getElementById('signin');
   f.onsubmit = async (e) => {
     e.preventDefault();
     const msg = document.getElementById('form-msg');
+    const email = f.querySelector('input').value.trim();
+    f.querySelector('button').disabled = true;
     try {
-      await db.signInEmail(f.querySelector('input').value.trim());
+      await db.signInEmail(email);
       if (db.getMode() === 'demo') { go('#/welcome'); return; }
-      msg.innerHTML = `<p class="ok" role="status">Check your email for the link. You can close this tab.</p>`;
-    } catch (err) { msg.innerHTML = errorBox(err); }
+      showCodeStep(email);
+    } catch (err) { msg.innerHTML = errorBox(err); f.querySelector('button').disabled = false; }
+  };
+}
+function showCodeStep(email) {
+  main.innerHTML = `
+    <form id="code" class="sheet paper stack narrow">
+      <h1 class="sheet-title">Check your email</h1>
+      <p>We sent a code to <b>${esc(email)}</b>. Type it here. (It can take a minute; check spam too.)</p>
+      <label for="f-code">Sign-in code</label>
+      <input id="f-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10" required>
+      <button class="btn" type="submit">Sign in</button>
+      <button class="link" type="button" data-again>Send a new code</button>
+      <div id="form-msg"></div>
+    </form>`;
+  const f = document.getElementById('code');
+  f.querySelector('input').focus();
+  f.querySelector('[data-again]').onclick = () => viewSignIn();
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('form-msg');
+    const token = f.querySelector('input').value.replace(/\D/g, '');
+    f.querySelector('button[type=submit]').disabled = true;
+    try {
+      await db.verifyCode(email, token);
+      await renderAccount();
+      go((await db.myProfile()) ? '#/' : '#/welcome');
+    } catch (err) {
+      msg.innerHTML = errorBox('That code didn\'t work. Check it, or send a new one.');
+      f.querySelector('button[type=submit]').disabled = false;
+    }
   };
 }
 
@@ -433,6 +465,20 @@ async function route() {
   if (mode === 'demo') {
     banner.hidden = false;
     banner.textContent = 'Demo mode: sample lists, nothing is saved.';
+  }
+  const authErr = db.authErrorFromUrl();
+  if (authErr) {
+    banner.hidden = false;
+    banner.textContent = `Sign-in link didn't work (${authErr}). Sign in again and type the emailed code instead.`;
+    history.replaceState(null, '', location.pathname + '#/signin');
+  } else if (new URLSearchParams(location.search).has('code')) {
+    // Came back from an email link. It only works in the browser that asked for it.
+    const signedIn = await db.currentUser();
+    history.replaceState(null, '', location.pathname + (signedIn ? (location.hash || '#/') : '#/signin'));
+    if (!signedIn) {
+      banner.hidden = false;
+      banner.textContent = 'That link opened in a different browser than the one you signed in from. Sign in here and type the emailed code instead.';
+    }
   }
   db.onAuth(async () => {
     await renderAccount();

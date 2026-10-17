@@ -46,7 +46,20 @@ export async function currentUser() {
 }
 export async function signInEmail(email) {
   if (mode === 'demo') { demo.signIn(email); listeners.forEach((fn) => fn()); return; }
-  check(await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } }));
+  check(await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true, emailRedirectTo: location.origin + '/' } }));
+}
+// The emailed code works in any browser or in the installed phone app,
+// unlike the link, which only works in the browser that asked for it.
+export async function verifyCode(email, token) {
+  if (mode === 'demo') return;
+  check(await sb.auth.verifyOtp({ email, token, type: 'email' }));
+  listeners.forEach((fn) => fn());
+}
+// If the page was opened from an email link that failed, Supabase puts the reason in the URL.
+export function authErrorFromUrl() {
+  const q = new URLSearchParams(location.search);
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  return q.get('error_description') || h.get('error_description') || null;
 }
 export async function signOut() {
   if (mode === 'demo') { demo.user = null; listeners.forEach((fn) => fn()); return; }
