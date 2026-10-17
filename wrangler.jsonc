@@ -4,5 +4,10 @@
   "compatibility_date": "2025-09-01",
   "assets": {
     "directory": "./"
-  }
+  },
+  // Put the site on yellowchecklist.com (and keep the .workers.dev test address).
+  "routes": [
+    { "pattern": "yellowchecklist.com", "custom_domain": true }
+  ],
+  "workers_dev": true
 }
