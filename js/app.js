@@ -364,7 +364,7 @@ function showCodeStep(email) {
   main.innerHTML = `
     <form id="code" class="sheet paper stack narrow">
       <h1 class="sheet-title">Check your email</h1>
-      <p>We sent a code to <b>${esc(email)}</b>. Type it here. (It can take a minute; check spam too.)</p>
+      <p>We emailed <b>${esc(email)}</b>. Type the code from the email here, or open the email's link in <b>this same browser</b>. (It can take a minute; check spam too.)</p>
       <label for="f-code">Sign-in code</label>
       <input id="f-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10" required>
       <button class="btn" type="submit">Sign in</button>
