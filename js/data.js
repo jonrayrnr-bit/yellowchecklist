@@ -29,7 +29,8 @@ export const onAuth = (fn) => listeners.add(fn);
 
 const LIST_SELECT =
   'id,title,intro,ranked,kind,visibility,status,upvote_count,created_at,remixed_from,category_id,prompt_id,author_id,' +
-  'author:profiles(username),category:categories(name,slug),items:list_items(position,text,note,mark)';
+  'author:profiles!lists_author_id_fkey(username),category:categories!lists_category_id_fkey(name,slug),' +
+  'items:list_items!list_items_list_id_fkey(position,text,note,mark)';
 
 function check({ data, error }) {
   if (error) throw new Error(error.message);
@@ -144,7 +145,7 @@ export async function getList(id) {
     const l = demo.lists.find((x) => x.id === id);
     return l ? sortItems(demo.hydrate(l)) : null;
   }
-  const l = check(await sb.from('lists').select(LIST_SELECT + ',prompt:prompts(text)').eq('id', id).maybeSingle());
+  const l = check(await sb.from('lists').select(LIST_SELECT + ',prompt:prompts!lists_prompt_id_fkey(text)').eq('id', id).maybeSingle());
   return sortItems(l);
 }
 export async function createList(list, items) {
@@ -194,7 +195,7 @@ export async function setUpvote(listId, on) {
 // ---------- Comments & reports ----------
 export async function comments(listId) {
   if (mode === 'demo') return demo.comments.filter((c) => c.list_id === listId).map(demo.hydrateComment);
-  return check(await sb.from('comments').select('id,body,created_at,author_id,author:profiles(username)').eq('list_id', listId).order('created_at'));
+  return check(await sb.from('comments').select('id,body,created_at,author_id,author:profiles!comments_author_id_fkey(username)').eq('list_id', listId).order('created_at'));
 }
 export async function addComment(listId, body) {
   const u = await currentUser();
