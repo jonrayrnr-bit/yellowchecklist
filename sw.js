@@ -1,6 +1,6 @@
 // Keeps the app shell available offline so it opens like an installed app.
 // List data always comes fresh from the network.
-const CACHE = 'yc-shell-v4';
+const CACHE = 'yc-shell-v5';
 const SHELL = ['./', 'index.html', 'css/style.css', 'js/app.js', 'js/data.js', 'js/demo.js', 'js/config.js',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'];
 
