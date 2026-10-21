@@ -1,0 +1,20 @@
+Subject: {{ .Token }} — check the box and confirm your YellowChecklist account
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F4F1E8;padding:32px 12px;font-family:Arial,Helvetica,sans-serif;">
+  <tr><td align="center">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background:#FFF4BF;border-radius:6px;border-top:6px solid #F2C94C;">
+      <tr><td style="padding:28px 28px 8px;font-size:22px;font-weight:bold;color:#2B2B2B;">&#9745;&nbsp;YellowChecklist</td></tr>
+      <tr><td style="padding:8px 28px 0;font-size:16px;line-height:24px;color:#2B2B2B;">
+        <p style="margin:0 0 14px;font-size:20px;font-weight:bold;">One box left to check.</p>
+        <p style="margin:0 0 14px;">Thanks for signing up! Type this code on the YellowChecklist sign-in screen and you're on the list, ready to make your own lists, borrow a few, and see where yours overlap with everyone else's.</p>
+      </td></tr>
+      <tr><td align="center" style="padding:4px 28px 18px;">
+        <div style="display:inline-block;background:#2B2B2B;color:#FFF4BF;font-size:32px;font-weight:bold;letter-spacing:8px;padding:14px 22px;border-radius:5px;">{{ .Token }}</div>
+      </td></tr>
+      <tr><td style="padding:0 28px 26px;font-size:13px;line-height:20px;color:#6B6455;">
+        <p style="margin:0 0 10px;">On the same device and browser where you signed up, you can <a href="{{ .ConfirmationURL }}" style="color:#6B6455;">confirm with this link</a> instead.</p>
+        <p style="margin:0;">Didn't sign up for YellowChecklist? You can ignore this email. No account will be created.</p>
+      </td></tr>
+    </table>
+    <p style="max-width:480px;margin:14px auto 0;font-size:12px;color:#9A927F;">YellowChecklist · yellowchecklist.com</p>
+  </td></tr>
+</table>
